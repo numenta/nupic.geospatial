@@ -4,11 +4,15 @@ Geospatial anomaly detection app using NuPIC.
 
 ## Usage
 
-Run:
+First, install requirements:
+
+    pip install -r requirements.txt
+
+Then, run:
 
     python server.py
 
-Then open `http://localhost:5000` in your browser.
+Finally, open `http://localhost:5000` in your browser.
 
 ### Loading your own data
 
