@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Sim Route</title>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/main.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
+    <script src="js/main.js"></script>
+  </head>
+  <body>
+    <div class="page-header">
+      <h1>Sim Route</h1>
+    </div>
+    <div id="alert" class="alert">
+      <button type="button" class="close" aria-hidden="true">&times;</button>
+      <span>Error</span>
+    </div>
+    <form role="form" class="form-inline">
+      <div class="form-group">
+        <label class="control-label" for="start">From</label>
+        <input id="start" type="search" class="form-control" value="Sunnyvale, CA" placeholder="Enter Start Address">
+        <label class="control-label"  for="end">To</label>
+        <input id="end" type="search" class="form-control" value="Redwood City, CA" placeholder="Enter End Address">
+        <select id="mode" class="form-control">
+          <option value="DRIVING" select="true">Car</option>
+          <option value="BICYCLING">Bike</option>
+          <option value="WALKING">Walking</option>
+          <option value="TRANSIT">Transit</option>
+        </select>
+      </div>
+      <div class="form-group filename">
+        <label class="control-label" for="filename">File name</label>
+        <input id="filename" value="route.csv" placeholder="Enter file name">
+        <button id="save" type="button" class="btn btn-primary">Save</button>
+        <a id="download"></a>
+      </div>
+      <br>
+      <div class="form-group">
+        <label class="control-label" for="time">Timestamp</label>
+        <input id="time" type="datetime-local">
+        <label class="control-label" for="rate">Rate (secs)</label>
+        <input id="rate" type="number" value="2" min="1">
+      </div>
+     </form>
+    <div id="directions-panel"></div>
+    <div id="map-canvas"></div>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.numenta.grokhound.MainActivity"
+    tools:ignore="MergeRootFrame" >
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ToggleButton
+        android:id="@+id/toggleAccuracy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onToggleClicked"
+        android:textOff="START"
+        android:textOn="STOP" />
+
+</FrameLayout>

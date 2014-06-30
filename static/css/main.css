@@ -1,0 +1,58 @@
+#map img {
+	opacity: 0.5;
+}
+
+.container {
+	position: relative;
+	width: 100% !important;
+	height: 100% !important;
+}
+
+.slider {
+	position: absolute;
+	width: 100%;
+	left: 0;
+}
+
+.iteration {
+	bottom: 0;
+}
+
+.range {
+	bottom: 23px;
+}
+
+.chevron {
+	width: 8px;
+	height: 8px;
+	border-width: 3px 3px 0 0;
+	margin: -1px 0 0 -1px;
+	border-style: solid;
+	display: inline-block;
+	position: relative;
+	vertical-align: top;
+	opacity: 0.6;
+}
+
+.current {
+	z-index: 1000 !important;
+}
+
+.current > .chevron {
+	width: 14px;
+	height: 14px;
+	border-width: 6px 6px 0 0;
+	margin: -1px 0 0 -1px;
+}
+
+.current > .chevron {
+	-webkit-animation-name: chevronPulse;
+    -webkit-animation-duration: 1.0s;
+    -webkit-animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes chevronPulse {
+  from { opacity: 1.0; }
+  50% { opacity: 0.4; }
+  to { opacity: 1.0; }
+}

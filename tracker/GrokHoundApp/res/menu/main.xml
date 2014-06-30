@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.numenta.grokhound.MainActivity" >
+
+    <item
+        android:id="@+id/action_services"
+        android:orderInCategory="100"
+        android:showAsAction="always|withText"
+        android:title="@string/action_enabled" android:checked="true" android:checkable="true" android:enabled="true" android:visible="true" android:icon="@drawable/ic_action_on"/>
+
+</menu>

@@ -1,0 +1,35 @@
+html, body, #map-canvas {
+  height: 100%;
+  margin: 5px;
+  padding: 5px
+}
+#alert {
+  display: none;
+}
+#directions-panel {
+  height: 100%;
+  float: right;
+  width: 390px;
+  overflow: auto;
+}
+
+#map-canvas {
+  margin-right: 400px;
+}
+input[type='number'] {
+  width: 50px;
+}
+.filename {
+
+}
+@media print {
+  #map-canvas {
+    height: 500px;
+    margin: 0;
+  }
+
+  #directions-panel {
+    float: none;
+    width: auto;
+  }
+}
