@@ -1,10 +1,14 @@
-# Grok: Hound
+# Hound
 
-Visualization of GPS coordinates and anomaly scores for the Hound application.
+Geospatial anomaly detection app using NuPIC.
 
 ## Usage
 
-Open `static/index.html` in your browser.
+Run:
+
+    python server.py
+
+Then open `http://localhost:5000` in your browser.
 
 ### Loading your own data
 
