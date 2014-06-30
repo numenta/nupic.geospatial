@@ -31,22 +31,22 @@ app = Flask(__name__)
 
 @app.route('/')
 def visualize():
-    return app.send_static_file('visualize.html')
+  return app.send_static_file('visualize.html')
 
 
 @app.route('/simulate')
 def simulate():
-    return app.send_static_file('simulate.html')
+  return app.send_static_file('simulate.html')
 
 
 @app.route('/js/<path:path>')
 def js(path):
-    return app.send_static_file(os.path.join('js', path))
+  return app.send_static_file(os.path.join('js', path))
 
 
 @app.route('/css/<path:path>')
 def css(path):
-    return app.send_static_file(os.path.join('css', path))
+  return app.send_static_file(os.path.join('css', path))
 
 
 
