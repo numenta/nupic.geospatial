@@ -13,4 +13,4 @@ VISUALIZATION_DATA=$HOUND/static/js/data.js
 mkdir -p $OUTPUT
 $HOUND/model/geospatial_anomaly.py $1 $ANOMALY_SCORES
 rm $VISUALIZATION_DATA
-$HOUND/tools/anomaly_to_js_data.py $ANOMALY_SCORES > $VISUALIZATION_DATA
+$HOUND/tools/anomaly_to_js_data.py $ANOMALY_SCORES $VISUALIZATION_DATA

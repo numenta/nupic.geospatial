@@ -32,7 +32,7 @@ import sys
 
 
 
-def run(dataPath, outPath):
+def preprocess(dataPath, outPath):
   with open(dataPath) as csvfile:
     reader = csv.reader(csvfile)
     writer = csv.writer(open(outPath, "wb"))
@@ -82,4 +82,4 @@ if __name__ == "__main__":
 
   dataPath = sys.argv[1]
   outPath = sys.argv[2]
-  run(dataPath, outPath)
+  preprocess(dataPath, outPath)

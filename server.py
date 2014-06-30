@@ -21,11 +21,23 @@
 # ----------------------------------------------------------------------
 import os
 
-from flask import Flask
+from flask import Flask, request
+
+from tools.preprocess_data import preprocess
+from model.geospatial_anomaly import runGeospatialAnomaly
+from tools.anomaly_to_js_data import postprocess
 
 
 
 app = Flask(__name__)
+
+DIR_OUTPUT           = "output"
+FILE_DATA            = "data.csv"
+FILE_PROCESSED_DATA  = "processed_data.csv"
+FILE_MODEL_OUTPUT    = "model_output.csv"
+
+DIR_STATIC_JS        = os.path.join("static", "js")
+FILE_JS_DATA         = "data.js"
 
 
 
@@ -37,6 +49,23 @@ def visualize():
 @app.route('/simulate')
 def simulate():
   return app.send_static_file('simulate.html')
+
+
+@app.route('/process', methods=['POST'])
+def process():
+  dataFile = os.path.join(DIR_OUTPUT, FILE_DATA)
+  processedDataFile = os.path.join(DIR_OUTPUT, FILE_PROCESSED_DATA)
+  modelOutputFile = os.path.join(DIR_OUTPUT, FILE_MODEL_OUTPUT)
+  jsDataFile = os.path.join(DIR_STATIC_JS, FILE_JS_DATA)
+
+  with open(dataFile, 'w') as f:
+    f.write(request.data)
+
+  preprocess(dataFile, processedDataFile)
+  runGeospatialAnomaly(processedDataFile, modelOutputFile)
+  postprocess(modelOutputFile, jsDataFile)
+
+  return "Done."
 
 
 @app.route('/js/<path:path>')
@@ -51,4 +80,7 @@ def css(path):
 
 
 if __name__ == "__main__":
-  app.run()
+  if not os.path.exists(DIR_OUTPUT):
+    os.makedirs(DIR_OUTPUT)
+
+  app.run(debug=True)

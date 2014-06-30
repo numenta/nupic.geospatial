@@ -25,31 +25,35 @@ import sys
 
 
 
-def run(dataPath):
+def postprocess(dataPath, outPath):
   with open(dataPath) as csvfile:
     reader = csv.reader(csvfile)
 
-    print "DATA = ["
-    reader.next()  # header
+    with open(outPath, 'w') as out:
+      out.write("DATA = [\n")
+      reader.next()  # header
 
-    for row in reader:
-      timestamp = row[0]
-      longitude = float(row[1])
-      latitude = float(row[2])
-      speed = float(row[3])
-      anomalyScore = float(row[4])
-      newSequence = "true" if int(row[5]) else "false"
-      print "[new Date(\"{0}\"), {1}, {2}, {3}, {4}, {5}],".format(
-        timestamp, longitude, latitude, speed, anomalyScore, newSequence)
+      for row in reader:
+        timestamp = row[0]
+        longitude = float(row[1])
+        latitude = float(row[2])
+        speed = float(row[3])
+        anomalyScore = float(row[4])
+        newSequence = "true" if int(row[5]) else "false"
+        out.write("[new Date(\"{0}\"), {1}, {2}, {3}, {4}, {5}],\n".format(
+          timestamp, longitude, latitude, speed, anomalyScore, newSequence))
 
-    print "]"
+      out.write("]\n")
 
 
 
 if __name__ == "__main__":
   if len(sys.argv) < 2:
-    print "Usage: {0} /path/to/data.csv".format(sys.argv[0])
+    print ("Usage: {0} "
+           "/path/to/data.csv "
+           "/path/to/outfile.csv").format(sys.argv[0])
     sys.exit(0)
 
   dataPath = sys.argv[1]
-  run(dataPath)
+  outPath  = sys.argv[2]
+  postprocess(dataPath, outPath)
