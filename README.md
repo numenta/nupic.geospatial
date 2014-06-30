@@ -14,6 +14,10 @@ Then, run:
 
 Finally, open `http://localhost:5000` in your browser.
 
+### Using the route simulator
+
+You can use the route simulator to generate geospatial data and run it through the model. Simply open `http://localhost:5000/simulate` in your browser.
+
 ### Loading your own data
 
-Use `tools/parse_csv.py` to convert your CSV data file into the contents for the `static/js/data.js` file.
+Use `tools/run_complete.sh` to run your own data through the system.
