@@ -83,6 +83,13 @@ def img(path):
   return app.send_static_file(os.path.join('img', path))
 
 
+# Disable cache
+@app.after_request
+def add_header(response):
+  response.cache_control.max_age = 0
+  return response
+
+
 if __name__ == "__main__":
   if not os.path.exists(DIR_OUTPUT):
     os.makedirs(DIR_OUTPUT)
