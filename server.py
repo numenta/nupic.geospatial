@@ -78,6 +78,10 @@ def css(path):
   return app.send_static_file(os.path.join('css', path))
 
 
+@app.route('/img/<path:path>')
+def img(path):
+  return app.send_static_file(os.path.join('img', path))
+
 
 if __name__ == "__main__":
   if not os.path.exists(DIR_OUTPUT):
