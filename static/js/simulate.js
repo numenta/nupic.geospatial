@@ -1,10 +1,22 @@
-/* ----------------------------------------------------------------------
- *  Copyright © 2014 Numenta Inc. All rights reserved.
+/*----------------------------------------------------------------------
+ * Numenta Platform for Intelligent Computing (NuPIC)
+ * Copyright (C) 2014, Numenta, Inc.  Unless you have an agreement
+ * with Numenta, Inc., for a separate license for this software code, the
+ * following terms and conditions apply:
  *
- *  The information and source code contained herein is the
- *  exclusive property of Numenta Inc. No part of this software
- *  may be used, reproduced, stored or distributed in any form,
- *  without explicit written authorization from Numenta Inc.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses.
+ *
+ * http://numenta.org/licenses/
  * ----------------------------------------------------------------------
  */
 (function() {
@@ -13,9 +25,10 @@
   var _service;
   var _map;
   var _preview;
+  var _route = [];
 
   /**
-   * Save selected route as CSV file.
+   * Convert route to CSV Data.
    *
    * CSV Data format:
    *
@@ -24,10 +37,11 @@
    * | TEXT |UNIX|  WGS84  | WGS84  | meters | m/s | 0-360 |radius of 68% confidence|
    *
    */
-  function save() {
+  function toCSV(config) {
     var content = "";
-    var path = buildPath();
+    var path = buildPath(config);
 
+    // Build CSV file
     $.each(path, function(index, val) {
       content += "simroute," // Device
               + val.timestamp + ","
@@ -39,40 +53,205 @@
               +  "1," // accuracy
               + "\n";
     });
+    return content;
+  }
 
-    // Save file
-    var blob = new Blob([content], {
-      type: "text/csv;charset=utf-8;"
+  /**
+   * Download data as a CSV file
+   */
+  function download() {
+    // Build CSV data
+    var csvdata = "";
+    $.each(_route, function(index, val) {
+      csvdata += toCSV(val);
     });
-    var url = window.URL.createObjectURL(blob);
-    var link = $('#download')[0];
-    var $filename = $('#filename');
-    link.href = url;
-    link.download = $filename.val();
-    link.click();
-    window.URL.revokeObjectURL(url);
-    showAlert('Saved ' + link.download, 'success');
+
+    // Get file name from user
+    bootbox.prompt({title: "Save Route As:",
+                    buttons: {cancel:{label:"Cancel"},
+                              confirm: {label:"Save"}},
+                    callback: function(name) {
+                                if (name === null) {
+                                  // Canceled by user
+                                  return;
+                                }
+
+                                // Save file
+                                var blob = new Blob([csvdata], {
+                                  type: "text/csv;charset=utf-8;"
+                                });
+                                var url = window.URL.createObjectURL(blob);
+                                var link = $('#download')[0];
+                                link.href = url;
+                                link.download = name;
+                                link.click();
+                                window.URL.revokeObjectURL(url);
+                              },
+                    value: "route.csv",
+                    placeholder: "Enter File Name"});
+  }
+
+  /**
+   * Post Route data to Nupic Model
+   * @return {[type]}
+   */
+  function postRouteData() {
+    // Update current route
+    updateRoute();
+
+    // Build CSV data
+    var csvdata = "";
+    $.each(_route, function(index, val) {
+      csvdata += toCSV(val);
+    });
+
+    // Post data to be processed by the model
+    $('#progress').modal('show');
+    $.ajax({
+      url: "/process",
+      type: "POST",
+      data: csvdata,
+      contentType: "text/csv;charset=utf-8;",
+      success: function(data, status, jqxhr) {
+        window.location.replace("/");
+
+      },
+      error: function(jqxhr, status, error) {
+        $('#progress').modal('hide');
+        bootbox.alert('Failed to build model <br>Please make sure the server is running. ('+status+')');
+      }
+     });
+  }
+
+  /**
+   * Update active route with current configuration
+   */
+  function updateRoute() {
+    var config = getCurrentRouteConfiguration();
+    var activeRoute =  $('#route li.active').text();
+    _route[activeRoute - 1] = config;
+  }
+
+  /**
+   * Get current route configuration based on the user input
+   * @return {Object} The configuration object in the following format:
+   * <pre>
+   * {
+   *   route: {Object},   // google map route object
+   *   timestamp: {long}, // Start timestamp (unix time)
+   *   rate: {long}        // Sampling rate in miliseconds
+   * }
+   * </pre>
+   */
+  function getCurrentRouteConfiguration() {
+    // Get current route
+    var directions = _renderer.getDirections();
+    var routeIdx = _renderer.getRouteIndex();
+    var route = directions.routes[routeIdx];
+
+    // Get Current Timestamp, converting local time to unix time
+    var date = $('#time').val();
+    var timestamp = Date.parse(date) + new Date().getTimezoneOffset() * 60000;
+    var rate = parseInt($('#rate').val()) * 1000;
+
+    return {directions: directions,
+            index: _renderer.getRouteIndex(),
+            route: route,
+            date: date,
+            mode: $('#mode').val(),
+            start: $('#start').val(),
+            end: $('#end').val(),
+            timestamp: timestamp,
+            rate: rate};
+  }
+
+  /**
+   * Update current route selection
+   * @param  {integer} selection: the new route number to select.
+   */
+  function selectRoute(selection) {
+    // Update old route with latest parameters
+    updateRoute();
+
+    // Unselect previous route
+    var $oldSelection = $('#route li.active');
+    $oldSelection.removeClass('active');
+
+    // Selecte new route
+    $newSelection = $('#route li:nth-child(' + selection + ')');
+    $newSelection.addClass('active');
+
+    var route = _route[selection - 1];
+
+    // Update route renderer
+    _renderer.setDirections(route.directions);
+    _renderer.setRouteIndex(route.index);
+
+    // Update fields
+    $('#time').val(route.date);
+    $('#start').val(route.start);
+    $('#end').val(route.end);
+    $('#rate').val(route.rate/1000);
+    $('#mode').val(route.mode);
+
+
+  }
+
+ /**
+  * Add the current route to the output
+  */
+  function addRoute() {
+
+    // Update current route
+    updateRoute();
+
+    var $route = $('#route');
+    var $selected =  $route.find('li.active');
+    var activeRoute = $selected.text();
+
+    // Save current configuration
+    var config = getCurrentRouteConfiguration();
+    _route[activeRoute - 1] = config;
+
+    // Update time based on next time
+    var lastRoute = _route[$route.children().size() - 2];
+    var timestamp = lastRoute.timestamp;
+    var legs = lastRoute.route.legs;
+    for (var l = 0, legLen = legs.length; l < legLen; l++) {
+      timestamp += legs[l].duration.value * 1000;
+    }
+    var nextTime = new Date(timestamp - new Date().getTimezoneOffset() * 60000);
+
+    $('#time').val(nextTime.toISOString().slice(0, 19));
+
+    // Add and select new route to paginator
+    $selected.removeClass('active');
+    var nextRoute = $route.children().size();
+    $newEl = $('<li class="active"><a href="#">'+nextRoute+'</a></li>');
+    $newEl.click(function() {
+      selectRoute($(this).text());
+    });
+    $newEl.insertBefore("#route li:last");
+
+    // Update new route
+    updateRoute();
   }
 
   /**
    * Generate Geo Data based on route and sampling rate
-   *
+   * @param  {[Object]} Route configuration object. See "getCurrentRouteConfiguration()"
    * @return {[Object]} Array of [timestamp, point, speed]
    */
-  function buildPath() {
+  function buildPath(config) {
 
     // timestamp, point, speed
     var results =[];
     var lastPoint, point;
 
-    var directions = _renderer.getDirections();
-    var routeIdx = _renderer.getRouteIndex();
-    var route = directions.routes[routeIdx];
-    var rate = parseInt($('#rate').val()) * 1000;
+    var route = config.route;
+    var rate = config.rate;
+    var timestamp = config.timestamp;
     var speed = 0;
-
-    // Convert local time to unix time
-    var timestamp = Date.parse($('#time').val()) + new Date().getTimezoneOffset() * 60000;
 
     // Traverse every step on the route
     for (var l = 0, legLen = route.legs.length; l < legLen; l++) {
@@ -136,7 +315,7 @@
    */
   function showPreview() {
     var coordinates = [];
-    var path = buildPath();
+    var path = buildPath(getCurrentRouteConfiguration());
     $.each(path, function(index, val) {
       coordinates.push(val.point);
     });
@@ -145,29 +324,8 @@
   }
 
   /**
-   * Show simple alert on top of the map
-   *
-   * @param msg The message to show
-   * @param severity 'success' | 'info' | 'warning' | 'danger'
-   *
-   * @see http://getbootstrap.com/components/#alerts
-   */
-  function showAlert(msg, severity) {
-    var $alert = $('#alert');
-    $alert.removeClass('alert-*');
-    $alert.addClass('alert-' + severity);
-    $content = $alert.find('span');
-    $content.text(msg);
-    $alert.show();
-    // Hide after 5 secs
-    setTimeout(function() {
-      $alert.hide();
-    }, 5000);
-  }
-
-  /**
    * Calculate the route between 2 locations
-   * @param  {Function} callback
+   * @param  {Function} callback to be called once route calculation completes
    */
   function calculateRoute(callback) {
     var start = $('#start').val();
@@ -189,16 +347,12 @@
           callback.call();
         }
       } else {
-        showAlert(status, 'danger');
+        bootbox.alert(status);
       }
     });
   }
 
   $(document).ready(function() {
-    // Alert pane
-    $('#alert .close').click(function() {
-      $('#alert').hide();
-    });
 
     // Re-route on changes
     $('#start,#end,#mode').change(function(event) {
@@ -210,9 +364,33 @@
       showPreview();
     })
 
+    // Reverse button
+    $('#reverse').click(function(){
+      var start = $('#start').val();
+      var end = $('#end').val();
+      $('#end').val(start);
+      $('#start').val(end);
+      calculateRoute();
+    });
+
+    // Build button
+    $('#build').click(function() {
+      postRouteData();
+    });
+
     // Save button
     $('#save').click(function() {
-      save();
+      download();
+    });
+
+    // Add to route button
+    $('#addRoute').click(function() {
+      addRoute();
+    });
+
+    // Route selection
+    $('#route li:first').click(function(){
+      selectRoute($(this).text());
     });
 
     // Update initial time
@@ -239,6 +417,7 @@
       zoom: 10,
       center: new google.maps.LatLng(37.4870969, -122.2284478) // Numenta's office
     });
+
     _renderer.setMap(_map);
     _renderer.setPanel(document.getElementById('directions-panel'));
     _preview = new google.maps.Polyline({
