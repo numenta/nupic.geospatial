@@ -118,6 +118,7 @@
       },
       error: function(jqxhr, status, error) {
         $('#progress').modal('hide');
+        bootbox.alert('Failed to build model <br>Please make sure the server is running. ('+status+')');
       }
      });
   }
