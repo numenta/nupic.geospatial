@@ -1,35 +1,66 @@
-html, body, #map-canvas {
-  height: 100%;
-  margin: 5px;
-  padding: 5px
+/*----------------------------------------------------------------------
+ * Numenta Platform for Intelligent Computing (NuPIC)
+ * Copyright (C) 2014, Numenta, Inc.  Unless you have an agreement
+ * with Numenta, Inc., for a separate license for this software code, the
+ * following terms and conditions apply:
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses.
+ *
+ * http://numenta.org/licenses/
+ * ------------------------------------------------
+ */
+#logo {
+  vertical-align: baseline;
+  margin-right: 0.5em;
 }
-#alert {
-  display: none;
-}
-#directions-panel {
-  height: 100%;
-  float: right;
-  width: 390px;
-  overflow: auto;
+#map-canvas {
+  height: 600px;
 }
 
-#map-canvas {
-  margin-right: 400px;
+#save {
+    top: 0px;
+    line-height: inherit;
+}
+#reverse {
+    text-decoration: none;
+    cursor: pointer;
 }
 input[type='number'] {
   width: 50px;
 }
-.filename {
-
+.pagination {
+  margin: 0px;
 }
-@media print {
-  #map-canvas {
-    height: 500px;
-    margin: 0;
-  }
 
-  #directions-panel {
-    float: none;
-    width: auto;
-  }
+progress {
+    width: 100%;
 }
+.loader {
+    width:50px;
+    -webkit-animation: rotate 2s linear infinite;
+    -moz-animation: rotate 2s linear infinite;
+    -o-animation: rotate 2s linear infinite;
+}
+@-webkit-keyframes rotate {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@-moz-keyframes rotate {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-o-keyframes rotate {
+    from { -o-transform: rotate(0deg); }
+    to { -o-transform: rotate(360deg); }
+}
+

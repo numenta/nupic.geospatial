@@ -1,53 +1,108 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Sim Route</title>
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/simulate.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
-    <script src="js/simulate.js"></script>
-  </head>
-  <body>
-    <div class="page-header">
-      <h1>Sim Route</h1>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <meta name="description" content="Numenta Geospatial Data Generator">
+  <title>Numenta Geospatial Data Generator</title>
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="css/simulate.css"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.2.0/bootbox.js"></script>
+  <script src="http://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.min.js"></script>
+  <script src="js/simulate.js"></script>
+</head>
+<body>
+  <!--[if lt IE 7]>
+  <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+  <div class="navbar navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <h1><img id="logo" src="img/numenta.png">Geospatial Data Generator </h1>
+      </div>
     </div>
-    <div id="alert" class="alert">
-      <button type="button" class="close" aria-hidden="true">&times;</button>
-      <span>Error</span>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <!-- Origin/Destination Form -->
+          <div class="row">
+            <form role="form" class="form-inline">
+              <label class="control-label col-md-2" for="start">From</label>
+              <input id="start" type="search" class="form-control" value="Sunnyvale, CA" placeholder="Enter Start Address">
+              <label class="control-label"  for="end">To</label>
+              <input id="end" type="search" class="form-control" value="Redwood City, CA" placeholder="Enter End Address">
+              <select id="mode" class="form-control">
+                <option value="DRIVING" select="true">Car</option>
+                <option value="BICYCLING">Bike</option>
+                <option value="WALKING">Walking</option>
+                <option value="TRANSIT">Transit</option>
+              </select>
+              <a id="reverse" class="glyphicon glyphicon-sort" title="Swap origin and destination"></a>
+            </form>
+          </div>
+          <div class="row">
+            <form role="form" class="form-inline">
+              <label class="control-label col-md-2" for="time">Timestamp</label>
+              <input id="time" type="datetime-local">
+              <label class="control-label" for="rate">Rate (secs)</label>
+              <input id="rate" type="number" value="2" min="1">
+            </form>
+          </div>
+        </div>
+        <!-- Add To Route Form -->
+        <div  id="routeview"class="col-md-4">
+          <div class="row">
+            <div class="col-md-9">
+              <strong>Trips</strong>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <ul id="route" class="pagination">
+                <li class="active"><a href="#">1</a></li>
+                <li><a href="#" id="addRoute" title="Add new route to trip">+</a></li>
+              </ul>
+            </div>
+            <div class="btn-group col-md-4">
+              <button id="build" type="button" class="btn btn-primary" title="Build new model">Build</button>
+              <button id="save"  type="button" class="btn btn-primary glyphicon glyphicon-floppy-save" title="Download route as CSV file"></button>
+              <a id="download"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--  MAP Container -->
+      <div class="row">
+        <div class="col-md-8" id="map-canvas" ></div>
+        <div class="col-md-4" id="directions-panel"></div>
+      </div>
     </div>
-    <form role="form" class="form-inline">
-      <div class="form-group">
-        <label class="control-label" for="start">From</label>
-        <input id="start" type="search" class="form-control" value="Sunnyvale, CA" placeholder="Enter Start Address">
-        <label class="control-label"  for="end">To</label>
-        <input id="end" type="search" class="form-control" value="Redwood City, CA" placeholder="Enter End Address">
-        <select id="mode" class="form-control">
-          <option value="DRIVING" select="true">Car</option>
-          <option value="BICYCLING">Bike</option>
-          <option value="WALKING">Walking</option>
-          <option value="TRANSIT">Transit</option>
-        </select>
+  </div>
+  <div class="navbar-fixed-bottom text-muted text-center small">
+    Copyright © 2014 Numenta Inc. All rights reserved
+  </div>
+  <!-- Progress dialog -->
+  <div id="progress" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Building Geospatial model</h4>
+        </div>
+        <div class="modal-body">
+          <progress></progress>
+        </div>
       </div>
-      <div class="form-group filename">
-        <label class="control-label" for="filename">File name</label>
-        <input id="filename" value="route.csv" placeholder="Enter file name">
-        <button id="save" type="button" class="btn btn-primary">Save</button>
-        <a id="download"></a>
-      </div>
-      <br>
-      <div class="form-group">
-        <label class="control-label" for="time">Timestamp</label>
-        <input id="time" type="datetime-local">
-        <label class="control-label" for="rate">Rate (secs)</label>
-        <input id="rate" type="number" value="2" min="1">
-      </div>
-     </form>
-    <div id="directions-panel"></div>
-    <div id="map-canvas"></div>
-  </body>
+    </div>
+  </div>
+</body>
 </html>
+<div class="modal-body">
+</div>
