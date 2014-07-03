@@ -9,3 +9,7 @@ install:
 
 script:
     - py.test --cov . --cov model --cov tools --cov-config .coveragerc
+
+after_success:
+- pip install python-coveralls
+- coveralls
