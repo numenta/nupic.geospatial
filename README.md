@@ -1,4 +1,4 @@
-# Hound
+# NuPIC Geospatial [![Build Status](https://travis-ci.org/numenta/nupic.geospatial.svg?branch=master)](https://travis-ci.org/numenta/nupic.geospatial) [![Coverage Status](https://coveralls.io/repos/numenta/nupic.geospatial/badge.png?branch=master)](https://coveralls.io/r/numenta/nupic.geospatial?branch=master)
 
 Geospatial anomaly detection app using NuPIC.
 
