@@ -28,7 +28,7 @@ import csv
 import datetime
 import sys
 
-from nupic.frameworks.opf.modelfactory import ModelFactory
+from nupic.frameworks.opf.model_factory import ModelFactory
 
 import model_params
 
@@ -38,7 +38,7 @@ DEFAULT_DATA_PATH = "data/commute.csv"
 DEFAULT_OUTPUT_PATH = "anomaly_scores.csv"
 
 ACCURACY_THRESHOLD = 80  # meters
-INTERVAL_THRESHOLD = 30  # seconds
+INTERVAL_THRESHOLD = 60 * 30  # seconds
 
 
 
@@ -83,6 +83,8 @@ def runGeospatialAnomaly(dataPath, outputPath,
 
   model = createModel(useTimeEncoders, scale, verbose)
 
+  tracksProcessed = 0
+
   with open (dataPath) as fin:
     reader = csv.reader(fin)
     csvWriter = csv.writer(open(outputPath,"wb"))
@@ -110,7 +112,7 @@ def runGeospatialAnomaly(dataPath, outputPath,
       accuracy = float(record[7])
 
       altitude = float(record[4]) if record[4] != "" else None
-      
+
       if accuracy > ACCURACY_THRESHOLD:
         continue
 
@@ -129,14 +131,15 @@ def runGeospatialAnomaly(dataPath, outputPath,
       lastTrackName = trackName
 
       if newSequence:
+        tracksProcessed += 1
         if verbose:
-          print "Starting new sequence..."
+          print "Starting new sequence (#{})...".format(tracksProcessed)
         model.resetSequenceStates()
 
       modelInput = {
         "vector": (speed, longitude, latitude, altitude)
       }
-      
+
       if useTimeEncoders:
         modelInput["timestamp"] = timestamp
 
@@ -151,6 +154,8 @@ def runGeospatialAnomaly(dataPath, outputPath,
                           1 if newSequence else 0])
       if verbose:
         print "[{0}] - Anomaly score: {1}.".format(timestamp, anomalyScore)
+
+      if tracksProcessed > 20: break
 
   print "Anomaly scores have been written to {0}".format(outputPath)
 

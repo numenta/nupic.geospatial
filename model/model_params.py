@@ -21,7 +21,7 @@
 
 MODEL_PARAMS = {
     # Type of model that the rest of these parameters apply to.
-    'model': "CLA",
+    'model': "HTMPrediction",
 
     # Version that specifies the format of the config.
     'version': 1,
@@ -81,7 +81,7 @@ MODEL_PARAMS = {
 
             # Spatial Pooler implementation selector.
             # Options: 'py', 'cpp' (speed optimized, new)
-            'spatialImp' : 'cpp', 
+            'spatialImp' : 'cpp',
 
             'globalInhibition': 1,
 
@@ -99,29 +99,29 @@ MODEL_PARAMS = {
 
             # potentialPct
             # What percent of the columns's receptive field is available
-            # for potential synapses. 
+            # for potential synapses.
             'potentialPct': 0.8,
 
             # The default connected threshold. Any synapse whose
             # permanence value is above the connected threshold is
             # a "connected synapse", meaning it can contribute to the
-            # cell's firing. Typical value is 0.10. 
+            # cell's firing. Typical value is 0.10.
             'synPermConnected': 0.1,
 
             'synPermActiveInc': 0.0001,
 
             'synPermInactiveDec': 0.0005,
 
-            'maxBoost': 1.0,
+            'boostStrength': 1.0,
         },
 
         # Controls whether TP is enabled or disabled;
         # TP is necessary for making temporal predictions, such as predicting
         # the next inputs.  Without TP, the model is only capable of
         # reconstructing missing sensor inputs (via SP).
-        'tpEnable' : True,
+        'tmEnable' : True,
 
-        'tpParams': {
+        'tmParams': {
             # TP diagnostic output verbosity control;
             # 0: silent; [1..6]: increasing levels of verbosity
             # (see verbosity in nta/trunk/py/nupic/research/TP.py and TP10X*.py)
