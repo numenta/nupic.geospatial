@@ -28,7 +28,7 @@ import csv
 import datetime
 import sys
 
-from nupic.frameworks.opf.modelfactory import ModelFactory
+from nupic.frameworks.opf.model_factory import ModelFactory
 
 import model_params
 
@@ -110,7 +110,7 @@ def runGeospatialAnomaly(dataPath, outputPath,
       accuracy = float(record[7])
 
       altitude = float(record[4]) if record[4] != "" else None
-      
+
       if accuracy > ACCURACY_THRESHOLD:
         continue
 
@@ -136,7 +136,7 @@ def runGeospatialAnomaly(dataPath, outputPath,
       modelInput = {
         "vector": (speed, longitude, latitude, altitude)
       }
-      
+
       if useTimeEncoders:
         modelInput["timestamp"] = timestamp
 
