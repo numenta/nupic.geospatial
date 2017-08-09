@@ -6,8 +6,6 @@ Geospatial anomaly detection app using NuPIC.
 
 ## Dependencies
 
-You must have [NuPIC](https://github.com/numenta/nupic) installed. Please follow the installation instructions there.
-
 Now, install the other python requirements for `nupic.geospatial`:
 
     pip install -r requirements.txt
